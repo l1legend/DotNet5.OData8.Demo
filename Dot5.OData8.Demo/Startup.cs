@@ -1,4 +1,5 @@
 using Dot5.OData8.Demo.Data;
+using Dot5.OData8.Demo.Data.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -31,7 +34,8 @@ namespace Dot5.OData8.Demo
         {
 
             services.AddControllers()
-            .AddOData(options => options.Select().Filter().Expand().Count().OrderBy());
+            .AddOData(options => options.Select().Filter().Expand().Count().OrderBy().SetMaxTop(100)
+            .AddRouteComponents("odata", GetEdmModel()));
 
             services.AddSwaggerGen(c =>
             {
@@ -42,6 +46,13 @@ namespace Dot5.OData8.Demo
             {
                 options.UseSqlServer(Configuration.GetConnectionString("MyWorldDbConnection"));
             });
+        }
+
+        public static IEdmModel GetEdmModel()
+        {
+            ODataConventionModelBuilder modelBuilder = new ODataConventionModelBuilder();
+            modelBuilder.EntitySet<Gadgets>("OdataGadgets");
+            return modelBuilder.GetEdmModel();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
