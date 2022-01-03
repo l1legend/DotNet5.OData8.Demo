@@ -1,0 +1,77 @@
+Postman queries:
+
+Query All
+[GET] https://localhost:(port #)/api/gadgets/all
+
+Select Query
+[GET] https://localhost:(port #)/api/gadgets/all?select=ProductName,Type,Id
+
+Filter Query
+[GET] https://localhost:(port #)/api/gadgets/all?$filter=productName eq 'Samsung Galaxy M30'
+
+Order By
+https://localhost:(port #)/api/gadgets/all?$orderby=id desc
+
+Get Top
+https://localhost:(port #)/api/gadgets/all?$top=2
+
+Expand
+https://localhost:(port #)/api/gadgets/person?$expand=BankAccounts($select=AccountId)
+
+Odata Routing from OdataGadgetsControll.cs and Statup.cs
+https://localhost:(port #)/odata/OdataGadgets
+
+Odata Query Select By Id
+https://localhost:(port #)/odata/OdataGadgets?select=id
+
+Odata Query Count
+https://localhost:(port #)/odata/OdataGadgets?$count=true
+
+SQL Query for creating test data:
+
+SQL Query to create a table:
+CREATE TABLE [dbo].[Gadgets](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ProductName] [varchar](max) NULL,
+	[Brand] [varchar](max) NULL,
+	[Cost] [decimal](18, 0) NOT NULL,
+	[ImageName] [varchar](1024) NULL,
+	[Type] [varchar](128) NULL,
+	[CreatedDate] [datetime] NULL,
+	[ModifiedDate] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+
+Get the Connection String:
+select
+    'data source=' + @@servername +
+    ';initial catalog=' + db_name() +
+    case type_desc
+        when 'WINDOWS_LOGIN' 
+            then ';trusted_connection=true'
+        else
+            ';user id=' + suser_name() + ';password=<<YourPassword>>'
+    end
+    as ConnectionString
+from sys.server_principals
+where name = suser_name()
+
+
+Select and insert:
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT TOP (1000) [Id]
+      ,[ProductName]
+      ,[Brand]
+      ,[Cost]
+      ,[ImageName]
+      ,[Type]
+      ,[CreatedDate]
+      ,[ModifiedDate]
+  FROM [ReportServer].[dbo].[Gadgets]
+
+--INSERT INTO [ReportServer].[dbo].[Gadgets] (ProductName, Brand, Cost, [Type])
+--VALUES ('Iphone', 'Apple', 3000, 'mobile'), ('Iphone1', 'Apple', 1000, 'mobile'), ('SamsungUltra', 'Samsung', 1, 'mobile')
